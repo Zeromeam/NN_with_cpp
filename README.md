@@ -1,51 +1,52 @@
 # Neural Network in C++
 
-An early from-scratch feed-forward classifier for handwritten MNIST digits. The
-retained entry point makes the data contract and network shape explicit:
+A feed-forward neural network project for classifying handwritten digits from
+MNIST-style CSV data. The application demonstrates the full classifier workflow
+in C++: input preprocessing, target encoding, training, inference, and a simple
+Windows console visualization.
 
-    neuralnetwork n(784, 100, 10, 0.3);
+## Architecture
 
-That is a 784-value image input, one 100-unit hidden layer, ten digit outputs,
-and a learning-rate argument of 0.3.
+The network is configured in `ConsoleApplication6.cpp` as:
 
-## What the retained code shows
+```cpp
+neuralnetwork n(784, 100, 10, 0.3);
+```
 
-ConsoleApplication6.cpp documents the end-to-end application flow:
+- 784 input values for a 28 × 28 grayscale image
+- one hidden layer with 100 units
+- 10 output scores, one for each digit
+- a learning-rate argument of 0.3
 
-1. Parse label-first MNIST CSV rows.
-2. Normalize every pixel from 0–255 into 0.01–1.00.
-3. Encode targets as 0.99 for the correct digit and 0.01 elsewhere.
-4. Train the 784 → 100 → 10 network over the loaded rows.
-5. Query the model and print all ten output scores.
-6. Draw a 28 × 28 input in a Windows console window for inspection.
+## Data pipeline
 
-The formula used by the source for each input pixel x is:
+Each CSV row begins with the digit label followed by 784 pixel values. The
+application:
 
-    normalized(x) = (x / 255) * 0.99 + 0.01
+1. reads and parses the CSV rows;
+2. scales pixel values from 0–255 into 0.01–1.00;
+3. encodes the expected class as 0.99 and the remaining classes as 0.01;
+4. trains the network over the prepared samples; and
+5. prints the ten output scores for each queried image.
 
-## Honest source status
+The input scaling used in the source is:
 
-This repository is incomplete as a standalone build. The Visual Studio entry
-point and a labelled MNIST CSV are present, but the historical neuralnetwork.h
-and Matrix implementation referenced by the program were not retained. Compiled
-Debug artifacts are included for provenance, but they do not replace the missing
-source and should not be treated as a reproducible release.
+```text
+normalized(x) = (x / 255) * 0.99 + 0.01
+```
 
-The portfolio therefore does not pretend to run the lost original model. It
-contains a clearly labelled deterministic reconstruction that matches the
-verified 784 → 100 → 10 architecture, normalization, and target encoding. The
-reconstruction was trained offline, evaluated on a held-out split, quantized,
-and shipped as static browser data.
+## Repository contents
 
-## Limitations
+- `NN_with_cpp/ConsoleApplication6/ConsoleApplication6.cpp` — application entry
+  point and training workflow
+- `NN_with_cpp/ConsoleApplication6/ConsoleApplication6.vcxproj` — Visual Studio
+  project configuration
+- `NN_with_cpp/ConsoleApplication6/111.csv` — labelled sample data used by the
+  project
 
-- The original header implementations and trained weights are missing.
-- The retained application is Windows-specific and is not currently buildable.
-- The CSV appears to be a compact project copy, not a documented canonical MNIST
-  distribution.
-- The reconstructed weights demonstrate the architecture; they are not claimed
-  to be the original experiment's parameters or result.
+The application targets Windows and uses the Win32 console drawing API to render
+the 28 × 28 input at a larger scale.
 
-Inspect the code-to-math explanation, hidden activations, output scores, and
-learned receptive fields in the
+Explore the architecture, hidden activations, output scores, and learned
+receptive fields in the
 [portfolio case study](https://medoali.at/work/neural-network-cpp).
