@@ -8,6 +8,7 @@ public:
 
 	void train(const Matrix<double>& inputs, const Matrix<double>& targets);
 	Matrix<double> query(const Matrix<double>& inputs) const;
+	void exportweights(const char* path) const;
 
 	int inodes, hnodes, onodes;
 	double lr;

@@ -1,12 +1,18 @@
 // ConsoleApplication6.cpp : Defines the entry point for the console application.
 //
 #include "iostream"
+#ifdef _WIN32
 #include "windows.h"
+#define pausehere() system("pause")
+#else
+#define pausehere() (void)0
+#endif
 #include "vector"
 #include "neuralnetwork.h"
 #include <fstream>
 #include <sstream>
 using namespace::std;
+#ifdef _WIN32
 void draw(vector<double>rgb)
 {
 
@@ -19,6 +25,7 @@ void draw(vector<double>rgb)
 				SetPixel(hdc, x, y, RGB(rgb[(y / 10) * 28 + x/10], rgb[(y / 10) * 28 + x/10], rgb[(y / 10) * 28 + x/10]));
 			}
 }
+#endif
 Matrix<double> rescale(vector<double> mat)
 {
 	Matrix<double> t;
@@ -64,16 +71,25 @@ int main()
 	}
 	// neralnetwork
 	cout << "installed\n";
-	system("pause");
+	pausehere();
 	neuralnetwork n(784, 100, 10, 0.3);
-	for (int i = 0; i < count; i++)
-	{
-		n.train(re[i], out[i]);
-		if (!(i % 10))
-			cout << i;
-	}
+	int epochs = 10;
+	int split = (count * 9) / 10;
+	for (int e = 0; e < epochs; e++)
+		for (int i = 0; i < split; i++)
+		{
+			n.train(re[i], out[i]);
+			if (!(i % 10))
+				cout << i;
+		}
+	int right = 0;
+	for (int i = split; i < count; i++)
+		if (n.query(re[i]).argmax() == int(cl[i][0]))
+			right++;
+	cout << "\n\n held out  " << right << " / " << count - split << endl;
+	n.exportweights("weights.txt");
 	cout << "\n\n continue \n ";
-	system("pause");
+	pausehere();
 	// test
 	char end = 0;
 	int testn = 0;
@@ -84,6 +100,6 @@ int main()
 		cin >> end;
 		testn++;
 	}
-	system("pause");
+	pausehere();
 	return 0;
 }

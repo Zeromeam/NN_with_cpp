@@ -1,4 +1,5 @@
 #include "neuralnetwork.h"
+#include <fstream>
 
 neuralnetwork::neuralnetwork(int inputnodes, int hiddennodes, int outputnodes, double learningrate)
 {
@@ -33,4 +34,17 @@ void neuralnetwork::train(const Matrix<double>& inputs, const Matrix<double>& ta
 Matrix<double> neuralnetwork::query(const Matrix<double>& inputs) const
 {
 	return inputs.dot(wih).sigmoid().dot(who).sigmoid();
+}
+
+void neuralnetwork::exportweights(const char* path) const
+{
+	std::ofstream f(path);
+	f.precision(17);
+	f << inodes << " " << hnodes << " " << onodes << "\n";
+	for (int i = 0; i < inodes; i++)
+		for (int j = 0; j < hnodes; j++)
+			f << wih.get(i, j) << "\n";
+	for (int i = 0; i < hnodes; i++)
+		for (int j = 0; j < onodes; j++)
+			f << who.get(i, j) << "\n";
 }
